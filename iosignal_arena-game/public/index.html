@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Arena · IOSignal 멀티플레이</title>
+  <meta name="description" content="웹 브라우저, 스마트폰, ESP32 버튼 컨트롤러가 같은 미로에서 겨루는 실시간 코인 술래잡기. IOSignal로 만들었습니다.">
+  <meta property="og:title" content="Arena · IOSignal 멀티플레이">
+  <meta property="og:description" content="웹 브라우저, 스마트폰, ESP32 버튼 컨트롤러가 같은 미로에서 겨루는 실시간 코인 술래잡기. IOSignal로 만들었습니다.">
+  <link rel="stylesheet" href="kit/kit.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app" id="app">
+    <header class="topbar">
+      <a data-iok="brand"></a>
+      <div class="brand"><span class="logo">◆</span> <b>Arena</b></div>
+      <span data-iok="net"></span>
+      <div class="stat cid">CID <code id="cid">-</code></div>
+      <div class="stat">맵 <b id="map-name">-</b></div>
+      <div class="timer" id="timer">--:--</div>
+      <button data-iok="join"></button>
+      <button class="icon-btn" id="mute" title="소리 켜기/끄기 (M)">🔊</button>
+    </header>
+
+    <main class="stage">
+      <section class="board" id="board">
+        <canvas id="canvas" aria-label="게임 맵"></canvas>
+        <div class="banner" id="banner" hidden></div>
+        <div class="round-end" id="round-end" hidden>
+          <h2>라운드 종료</h2>
+          <ol id="podium"></ol>
+          <p class="next">다음 라운드 <b id="next-in">7</b>초 후 · 다음 맵 <b id="next-map"></b></p>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="watch-join" data-iok="card"></div>
+        <div class="me-card" id="me-card">
+          <div class="me-swatch" id="me-swatch"></div>
+          <div>
+            <div class="me-name" id="me-name">관전 중</div>
+            <div class="me-sub" id="me-sub">-</div>
+          </div>
+        </div>
+        <div class="dash-meter" id="dash-meter" title="대시 쿨다운"><div class="fill" id="dash-fill"></div><span>DASH</span></div>
+        <h3>순위</h3>
+        <ul class="ranking" id="ranking"></ul>
+        <h3>이벤트</h3>
+        <ul class="log" id="log" role="log"></ul>
+      </aside>
+    </main>
+
+    <footer class="help">
+      <span><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> / <kbd>WASD</kbd> 이동</span>
+      <span><kbd>Space</kbd> 대시 (3칸)</span>
+      <span><kbd>M</kbd> 소리</span>
+      <span class="rule">👑 술래에게 닿으면 술래가 넘어갑니다 · 🪙 코인 +1 · 술래는 2초마다 −1 · 태그 성공 +3</span>
+    </footer>
+
+    <div class="dpad" id="dpad" aria-hidden="true">
+      <button data-dir="U">▲</button>
+      <button data-dir="L">◀</button>
+      <button data-act="A" class="act">DASH</button>
+      <button data-dir="R">▶</button>
+      <button data-dir="D">▼</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <form class="join-card" id="join-form">
+      <p class="iok-kicker">IOSignal 실시간 멀티플레이</p>
+      <h1>◆ Arena</h1>
+      <p class="lead">코인 술래잡기 — 모든 참가자가 같은 미로를 봅니다.<br />웹 브라우저와 ESP32 버튼 컨트롤러가 함께 플레이합니다.</p>
+      <label>닉네임 <input id="name" maxlength="12" autocomplete="off" placeholder="최대 12자" /></label>
+      <button type="submit" class="primary" id="join-btn">입장하기</button>
+      <button type="button" class="ghost" id="watch-btn">관전만 하기</button>
+      <p class="hint">입장 버튼을 누르면 효과음이 켜집니다.</p>
+    </form>
+  </div>
+
+  <!-- IOSignal browser client (IIFE, global IO) served from node_modules by server.mjs -->
+  <script src="vendor/io.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1b1d3a">
+  <title>범퍼카 · IOSignal 멀티플레이</title>
+  <meta name="description" content="스마트폰이 컨트롤러가 되는 실시간 멀티플레이 범퍼카. QR 코드로 바로 참여하세요. IOSignal로 만들었습니다.">
+  <meta property="og:title" content="범퍼카 · IOSignal 멀티플레이">
+  <meta property="og:description" content="스마트폰이 컨트롤러가 되는 실시간 멀티플레이 범퍼카. QR 코드로 바로 참여하세요. IOSignal로 만들었습니다.">
+  <link rel="stylesheet" href="kit/kit.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/io.js"></script>
+</head>
+<body>
+  <canvas id="view"></canvas>
+
+  <header id="top">
+    <a data-iok="brand"></a>
+    <b class="logo">🎪 범퍼카</b>
+    <span data-iok="net"></span>
+    <span id="timer" class="pill timer">2:00</span>
+    <button data-iok="join"></button>
+    <button id="soundBtn" class="pill btn" title="소리 켜기/끄기">🔊</button>
+  </header>
+
+  <section id="start" class="overlay">
+    <div class="panel">
+      <p class="iok-kicker">IOSignal 실시간 멀티플레이</p>
+      <h1>🎪 범퍼카</h1>
+      <p class="sub">쿵! 부딪치면 점수. 옆구리와 뒤를 노리고, 연달아 부딪치면 콤보!</p>
+      <label class="field">닉네임 <input id="name" maxlength="10" placeholder="최대 10자" autocomplete="off"></label>
+      <div id="colors" class="colors" role="radiogroup" aria-label="차 색깔"></div>
+      <div class="actions">
+        <button id="playBtn" class="primary">타러 가기</button>
+        <button id="watchBtn">큰 화면 보기</button>
+      </div>
+      <p class="hint">휴대폰: 조이스틱으로 가고 싶은 쪽을 가리키세요 · 🚀 부스트 · 📯 빵빵<br>PC: 방향키/WASD, Space 부스트, H 빵빵</p>
+    </div>
+  </section>
+
+  <section id="hud" hidden>
+    <div class="stats">
+      <span>점수 <b id="score">0</b></span>
+      <span id="comboChip" class="combo" hidden>콤보 <b id="combo">x2</b></span>
+    </div>
+    <div id="joy" class="joy"><div id="knob" class="knob"></div></div>
+    <div class="buttons">
+      <button id="hornBtn" class="act horn" aria-label="빵빵">📯<small>빵빵</small></button>
+      <button id="boostBtn" class="act boost" aria-label="부스트">🚀<small>부스트</small></button>
+    </div>
+  </section>
+
+  <section id="result" class="result" hidden>
+    <h2>🏁 이번 판 결과</h2>
+    <ol id="podium"></ol>
+    <p class="sub"><span id="nextIn">7</span>초 뒤 새 판</p>
+  </section>
+
+  <aside id="side" hidden>
+    <div data-iok="card"></div>
+    <h2>순위</h2>
+    <ol id="rank"></ol>
+    <h2>소식</h2>
+    <ul id="feed"></ul>
+  </aside>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

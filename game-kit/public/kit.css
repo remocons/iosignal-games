@@ -1,0 +1,88 @@
+/* IOSignal game kit: brand badge, connection chip, join button and dialog, big-screen QR card.
+   Classes start with iok-. A game can tune the chips with these variables. */
+:root {
+  --iok-blue: #1763c6;
+  --iok-ink: #14213a;
+  --iok-muted: #5b6785;
+  --iok-chip: rgba(255, 255, 255, 0.94);
+  --iok-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
+  --iok-ok: #2fbf71;
+  --iok-wait: #f0a020;
+  --iok-bad: #e5484d;
+}
+
+.iok-brand, .iok-net, .iok-join {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  height: 28px; box-sizing: border-box; padding: 0 10px; border-radius: 99px;
+  background: var(--iok-chip); color: var(--iok-ink); box-shadow: var(--iok-shadow);
+  font: 600 13px/1 system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  white-space: nowrap; text-decoration: none; pointer-events: auto;
+}
+
+/* brand */
+.iok-brand { color: var(--iok-blue); font-weight: 800; letter-spacing: .2px; }
+.iok-brand:hover { filter: brightness(1.05); }
+
+/* connection */
+.iok-net { font-weight: 600; font-variant-numeric: tabular-nums; cursor: default; }
+.iok-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--iok-wait); flex: none; }
+.iok-net[data-state='ready'] .iok-dot { background: var(--iok-ok); box-shadow: 0 0 0 3px rgba(47, 191, 113, .22); animation: iok-pulse 2s ease-in-out infinite; }
+.iok-net[data-state='closed'] .iok-dot { background: var(--iok-bad); }
+.iok-rtt { color: var(--iok-muted); }
+.iok-people, .iok-ard { padding-left: 6px; border-left: 1px solid rgba(20, 33, 58, .15); }
+@keyframes iok-pulse { 50% { box-shadow: 0 0 0 5px rgba(47, 191, 113, .08); } }
+
+/* join button */
+.iok-join { border: 0; cursor: pointer; background: var(--iok-blue); color: #fff; }
+.iok-join:hover { filter: brightness(1.1); }
+
+@media (max-width: 560px) {
+  .iok-join-text, .iok-state { display: none; }
+  .iok-brand, .iok-net, .iok-join { gap: 4px; padding: 0 7px; font-size: 12px; }
+  .iok-people { padding-left: 0; border: 0; }
+}
+
+/* dialog */
+.iok-dialog {
+  width: min(360px, calc(100vw - 32px)); box-sizing: border-box; padding: 22px 20px 16px;
+  border: 0; border-radius: 18px; background: #fff; color: var(--iok-ink); text-align: center;
+  font: 400 14px/1.5 system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+}
+.iok-dialog::backdrop { background: rgba(10, 16, 30, .55); }
+.iok-dialog h2 { margin: 0 0 6px; font-size: 19px; }
+.iok-lead { margin: 0 0 12px; color: var(--iok-muted); font-size: 13px; }
+.iok-close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: #eef1f6; color: var(--iok-ink); font-size: 15px; cursor: pointer; }
+.iok-dialog .iok-qr { display: block; width: 220px; max-width: 70vw; height: auto; aspect-ratio: 1; margin: 0 auto 8px;
+  border-radius: 12px; box-shadow: 0 0 0 1px #e3e7ef; }
+.iok-url { display: block; font: 700 15px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--iok-blue);
+  word-break: break-all; user-select: all; }
+.iok-note { margin: 4px 0 0; color: var(--iok-muted); font-size: 12px; }
+.iok-actions { display: flex; gap: 8px; justify-content: center; margin: 14px 0 8px; }
+.iok-actions button { flex: 1; height: 40px; border: 0; border-radius: 10px; background: #eef1f6; color: var(--iok-ink);
+  font: 700 14px/1 inherit; font-family: inherit; cursor: pointer; }
+.iok-actions .iok-primary { background: var(--iok-blue); color: #fff; }
+.iok-watch { display: block; margin: 2px 0 10px; color: var(--iok-muted); font-size: 13px; }
+.iok-powered { display: inline-flex; align-items: center; gap: 5px; color: var(--iok-muted); font-size: 12px; text-decoration: none; }
+.iok-powered b { color: var(--iok-blue); }
+
+/* big-screen card */
+.iok-card { text-align: center; color: var(--iok-ink); padding: 2px 0 10px; margin-bottom: 8px; border-bottom: 1px solid rgba(20, 33, 58, .1); }
+.watch-join.iok-card { border-bottom: 0; }
+.iok-card-head { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 8px;
+  color: var(--iok-blue); font-weight: 800; font-size: 14px; }
+.iok-card .iok-qr { display: block; width: 100%; max-width: 200px; height: auto; aspect-ratio: 1; margin: 0 auto 6px;
+  border-radius: 10px; background: #fff; }
+.iok-cta { margin: 0; font-weight: 700; font-size: 14px; }
+.iok-card .iok-url { font-size: 14px; }
+
+/* small label above a game's title on its start screen */
+.iok-kicker { display: block; margin: 0 0 4px; color: var(--iok-blue);
+  font-weight: 800; font-size: 12px; letter-spacing: .4px; }
+
+/* small phones: the player count stays in the chip's tooltip and on the big screen */
+@media (max-width: 400px) {
+  .iok-people, .iok-ard { display: none; }
+  .iok-brand { padding: 0 6px; font-size: 11.5px; }
+}

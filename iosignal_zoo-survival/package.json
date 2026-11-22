@@ -1,0 +1,30 @@
+{
+  "name": "iosignal-zoo-survival",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "동물원 생존하기: an isometric voxel multiplayer game on IOSignal server.host() for phones, a whole-map screen and ESP8266 button controllers",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "bots": "node scripts/bots.mjs"
+  },
+  "keywords": [
+    "iosignal",
+    "game",
+    "voxel",
+    "isometric",
+    "multiplayer",
+    "arduino",
+    "esp8266"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "iosignal": "9.23.0",
+    "qrcode": "1.5.4"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "iosignal-bumper-cars",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "범퍼카: a multiplayer bumper-car rink on IOSignal server.host() for phones and a big screen, with bot cars, balls and cones",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "iosignal",
+    "game",
+    "bumper cars",
+    "physics",
+    "multiplayer"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "iosignal": "9.23.0",
+    "qrcode": "1.5.4"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

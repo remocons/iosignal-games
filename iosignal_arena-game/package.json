@@ -1,0 +1,34 @@
+{
+  "name": "iosignal-arena-game",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "IOSignal multi-user network game example: coin tag in a grid maze for web browsers and ESP32-C3 button controllers",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:browser": "node scripts/browser-test.mjs",
+    "bots": "node scripts/bots.mjs",
+    "perf": "node scripts/perf.mjs"
+  },
+  "keywords": [
+    "iosignal",
+    "websocket",
+    "game",
+    "multiplayer",
+    "arduino",
+    "esp32"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "iosignal": "9.23.0",
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

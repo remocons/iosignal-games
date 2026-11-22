@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#7cc9f0">
+  <title>동물원 생존하기 · IOSignal 멀티플레이</title>
+  <meta name="description" content="스마트폰과 아두이노 버튼으로 함께 하는 실시간 멀티플레이 탈출 게임. QR 코드로 바로 참여하세요. IOSignal로 만들었습니다.">
+  <meta property="og:title" content="동물원 생존하기 · IOSignal 멀티플레이">
+  <meta property="og:description" content="스마트폰과 아두이노 버튼으로 함께 하는 실시간 멀티플레이 탈출 게임. QR 코드로 바로 참여하세요. IOSignal로 만들었습니다.">
+  <link rel="stylesheet" href="kit/kit.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/io.js"></script>
+</head>
+<body>
+  <canvas id="view"></canvas>
+
+  <header id="top">
+    <a data-iok="brand"></a>
+    <b class="logo">🦁 동물원 생존하기</b>
+    <span data-iok="net"></span>
+    <span id="stage" class="pill stage">1. 동물원 광장</span>
+    <button id="camBtn" class="pill btn" hidden title="M">전체 맵</button>
+    <button data-iok="join"></button>
+  </header>
+
+  <!-- view: mouse wheel zoom, drag to pan, right-drag (or Shift+drag) to turn; or these buttons -->
+  <nav id="viewCtl" class="viewctl" aria-label="화면 조절">
+    <button id="turnL" title="왼쪽으로 돌리기 (오른쪽 끌기)">⟲</button>
+    <button id="turnR" title="오른쪽으로 돌리기">⟳</button>
+    <button id="zoomOut" title="축소 (마우스 휠)">－</button>
+    <button id="zoomIn" title="확대 (마우스 휠)">＋</button>
+    <button id="viewReset" title="처음 크기 (두 번 클릭)">⌂</button>
+  </nav>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- start -->
+  <section id="start" class="overlay">
+    <div class="panel">
+      <p class="iok-kicker">IOSignal 실시간 멀티플레이</p>
+      <h1>🦁 동물원 생존하기</h1>
+      <p class="sub">지뢰를 묻고, 점프로 피하고, 맹수와 로봇과 물을 조심하세요.</p>
+      <label class="field">닉네임 <input id="name" maxlength="10" placeholder="최대 10자" autocomplete="off"></label>
+      <div id="avatars" class="avatars" role="radiogroup" aria-label="동물 고르기"></div>
+      <div class="actions">
+        <button id="playBtn" class="primary">참여하기</button>
+        <button id="watchBtn">전체 맵 보기</button>
+      </div>
+      <p class="hint">🏁 노랗게 빛나는 <b>탈출구</b>에 먼저 닿으면 +50점, 모두 다음 공간으로 갑니다.<br>휴대폰: 조이스틱 이동, 점프·지뢰 버튼 · PC: 방향키/WASD, Space 점프, E 지뢰, M 전체 맵 · 마우스: 휠 확대, 끌기 이동, 오른쪽 끌기 회전</p>
+    </div>
+  </section>
+
+  <!-- play HUD -->
+  <section id="hud" hidden>
+    <div class="stats">
+      <span>점수 <b id="score">0</b></span>
+      <span>생존 <b id="life">0</b>초</span>
+      <span>지뢰 <b id="mines">●●●</b></span>
+    </div>
+    <div id="joy" class="joy"><div id="knob" class="knob"></div></div>
+    <div class="buttons">
+      <button id="mineBtn" class="act mine" aria-label="지뢰 매설">💣<small>지뢰</small></button>
+      <button id="jumpBtn" class="act jump" aria-label="점프">⤴<small>점프</small></button>
+    </div>
+  </section>
+
+  <section id="dead" class="dead" hidden>
+    <div class="big" id="deadIcon">💥</div>
+    <div id="deadText">지뢰에 당했어요</div>
+    <div class="sub"><span id="respawn">3</span>초 뒤 다시 시작</div>
+  </section>
+
+  <!-- watch side panel -->
+  <aside id="side" hidden>
+    <div data-iok="card"></div>
+    <h2>순위</h2>
+    <ol id="rank"></ol>
+    <h2>소식</h2>
+    <ul id="feed"></ul>
+  </aside>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
