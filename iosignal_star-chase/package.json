@@ -1,0 +1,21 @@
+{
+  "name": "iosignal-star-chase",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Star Chase: the smallest IOSignal multiplayer game, a starting point for your own (server.host() judges, phones join by QR)",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": ["iosignal", "game", "multiplayer", "starter"],
+  "license": "MIT",
+  "dependencies": {
+    "iosignal": "9.23.0",
+    "qrcode": "1.5.4"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

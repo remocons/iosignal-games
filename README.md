@@ -2,10 +2,11 @@
 
 [IOSignal](https://iosignal.net)로 만든 **멀티유저 네트워크 게임** 예제 모음입니다. 큰 화면 하나를 띄워 두고, 참가자는 각자의 스마트폰으로 QR 코드를 찍어 들어옵니다. 앱 설치는 필요 없습니다. 일부 게임은 아두이노 버튼 컨트롤러로도 함께 할 수 있습니다.
 
-자기 게임에 IOSignal을 붙이려는 개발자가 그대로 읽고 고쳐 쓸 수 있도록, 세 게임 모두 같은 구조로 만들었습니다.
+자기 게임에 IOSignal을 붙이려는 개발자가 그대로 읽고 고쳐 쓸 수 있도록, 모든 게임을 같은 구조로 만들었습니다. AI 도우미로 만들 때 쓰는 맥락 파일과 프롬프트 예제도 함께 있습니다.
 
 | 게임 | 내용 | 참가 기기 | IOSignal에서 볼 것 | 바로 해 보기 |
 |---|---|---|---|---|
+| [Star Chase](./iosignal_star-chase/README.md) | 별 먼저 먹기 (약 220줄) | 브라우저, 스마트폰 | **자기 게임의 시작점.** 판정·위조 차단·보관 태그·한 사람에게 보내기·재접속의 최소 형태 | 로컬에서 `npm start` |
 | [Arena](./iosignal_arena-game/README.md) | 미로 코인 술래잡기 | 브라우저, 스마트폰, ESP32-C3 버튼 컨트롤러 | 아두이노 TCP 연결, 장치 하나에만 보내는 피드백(`@fx`), 변화 즉시 + 15Hz 스냅샷 | [lab.iosignal.net/games/arena/](https://lab.iosignal.net/games/arena/) |
 | [범퍼카](./iosignal_bumper-cars/README.md) | 부딪치면 점수 나는 범퍼카 | 스마트폰(조이스틱), PC | 서버 안의 30Hz 물리 루프(`host.loop`), 봇, 한 스텝의 이벤트를 메시지 하나로 | [lab.iosignal.net/games/bumper-cars/](https://lab.iosignal.net/games/bumper-cars/) |
 | [동물원 생존하기](./iosignal_zoo-survival/README.md) | 아이소메트릭 복셀 탈출 게임 | 스마트폰, PC, ESP8266(D1 mini) 컨트롤러 | 보관 태그(`$roster`)로 늦게 온 화면도 바로 명단 받기, 아두이노 OLED 피드백 | [lab.iosignal.net/games/zoo-survival/](https://lab.iosignal.net/games/zoo-survival/) |
@@ -25,7 +26,7 @@ npm start
 
 ## 게임 하나의 구조
 
-세 게임 모두 같은 방식으로 나뉘어 있습니다. 새 게임을 만들 때 이 틀을 따르면 됩니다.
+모든 게임이 같은 방식으로 나뉘어 있습니다. 새 게임을 만들 때 이 틀을 따르면 됩니다.
 
 ```
  스마트폰·PC 브라우저 ── WebSocket /ws ──┐
@@ -48,6 +49,14 @@ npm start
 | `test/` | 규칙 단위 시험, 실제 소켓으로 접속하는 시험(입력·출력 위조가 막히는지 포함) |
 
 핵심은 **클라이언트는 입력만 보내고, 판정은 서버 안의 호스트가 한다**는 점입니다. 호스트는 입력마다 서버가 확인한 보낸 사람(`from.cid`)을 받고, 출력 태그(`own`)는 호스트만 보낼 수 있어서 클라이언트가 점수나 상태를 위조할 수 없습니다. 자세한 설명은 [게임 시작하기](https://docs.iosignal.net/docs/game) 문서에 있습니다.
+
+## AI로 만들기 (`ai/`)
+
+AI 도우미로 자기 게임을 만들 때 쓰는 자료입니다. [ai/README.md](./ai/README.md)
+
+- [`ai/iosignal-game.md`](./ai/iosignal-game.md): AI에게 통째로 주는 맥락 파일. 규칙, 정확한 API, 폴더 구조, 시험 방법, 흔한 실수
+- [`ai/prompts.md`](./ai/prompts.md): 단계별 프롬프트 예제(새 게임, 싱글 게임을 멀티로, 휴대폰 컨트롤러, 아두이노, 봇, 문제 해결, 검토)
+- 시작점은 `iosignal_star-chase`를 복사하는 것입니다.
 
 ## 게임 키트 (`game-kit/`)
 

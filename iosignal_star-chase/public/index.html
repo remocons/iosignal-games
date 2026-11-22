@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Star Chase · IOSignal 멀티플레이</title>
+<meta name="description" content="IOSignal로 만든 가장 작은 멀티플레이 게임 예제. 별을 먼저 먹으면 1점.">
+<link rel="stylesheet" href="kit/kit.css">
+<style>
+  body { margin: 0; font: 15px system-ui, sans-serif; background: #14182b; color: #fff; text-align: center; }
+  header { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px; }
+  .pill { background: #fff; color: #14213a; border-radius: 99px; padding: 4px 10px; font-weight: 700; font-size: 13px; }
+  form { margin: 8px; }
+  input, form button { font: inherit; padding: 8px 12px; border-radius: 8px; border: 0; }
+  canvas { background: #1e2440; border-radius: 10px; width: min(96vw, 640px); }
+  #pad button { width: 64px; height: 64px; font-size: 24px; margin: 4px; border-radius: 12px; border: 0; }
+</style>
+<script src="vendor/io.js"></script>
+</head>
+<body>
+<header>
+  <a data-iok="brand"></a>
+  <span class="pill">⭐ Star Chase</span>
+  <span data-iok="net"></span>
+  <span class="pill">점수 <b id="score">0</b></span>
+  <button data-iok="join"></button>
+</header>
+<form id="join"><input id="name" maxlength="10" placeholder="닉네임" autocomplete="off"> <button>입장</button></form>
+<canvas id="c" width="640" height="384"></canvas>
+<div id="pad"><button data-d="0,-1">▲</button><br><button data-d="-1,0">◀</button><button data-d="0,1">▼</button><button data-d="1,0">▶</button></div>
+<script type="module">
+import { TAGS, RULES } from './shared.js';
+import { mountGameKit } from './kit/kit.js';
+const $ = (id) => document.getElementById(id);
+
+// Relative to the page, so it also works behind a proxy sub path (…/games/star-chase/ws).
+const ws = new URL('ws', location.href);
+ws.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+const io = new IO(ws.href);
+const kit = mountGameKit({ io, title: 'Star Chase' });
+
+let joined = false, snap = null, names = new Map();
+const join = () => io.signal(TAGS.IN, `J,${$('name').value.replace(/,/g, ' ')}`);
+$('join').onsubmit = (e) => { e.preventDefault(); joined = true; $('join').hidden = true; if (io.stateName === 'ready') join(); };
+
+io.on('ready', () => {                    // again after every reconnect, which brings a new CID
+  io.subscribe(`${TAGS.STATE},${TAGS.ROSTER}`);
+  if (joined) join();
+});
+io.on('message', (tag, data) => {
+  if (tag === TAGS.STATE) snap = data;
+  if (tag === TAGS.ROSTER) { names = new Map(data.p); kit.setRoster(data.p.map(() => 'web')); }
+});
+io.on('@' + TAGS.YOU, (tag, r) => { $('score').textContent = r.score; }); // only this connection gets it
+setInterval(() => { if (joined && io.stateName === 'ready') io.signal(TAGS.IN, 'H'); }, 3000);
+
+// Send intent, not results: the host decides where you end up and who scores.
+const move = (dx, dy) => { if (joined && io.stateName === 'ready') io.signal(TAGS.IN, `M,${dx},${dy}`); };
+const KEYS = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+addEventListener('keydown', (e) => { if (KEYS[e.key]) { e.preventDefault(); move(...KEYS[e.key]); } });
+for (const b of document.querySelectorAll('#pad button')) b.onclick = () => move(...b.dataset.d.split(',').map(Number));
+
+const ctx = $('c').getContext('2d'), cell = 32;
+(function draw() {
+  requestAnimationFrame(draw);            // first, so an error in one frame never stops drawing
+  ctx.clearRect(0, 0, RULES.W * cell, RULES.H * cell);
+  if (!snap) return;
+  ctx.textAlign = 'center';
+  ctx.font = '24px system-ui';
+  ctx.fillText('⭐', snap.s[0] * cell + 16, snap.s[1] * cell + 25);
+  for (const [cid, x, y, score] of snap.p) {
+    ctx.fillStyle = cid === io.cid ? '#ffd23f' : '#5ec8ff';
+    ctx.fillRect(x * cell + 4, y * cell + 4, cell - 8, cell - 8);
+    ctx.fillStyle = '#fff'; ctx.font = '11px system-ui';
+    ctx.fillText(`${names.get(cid) ?? '?'} ${score}`, x * cell + 16, Math.max(10, y * cell - 2));
+  }
+})();
+</script>
+</body>
+</html>
