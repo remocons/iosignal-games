@@ -33,7 +33,7 @@ export const RULES = {
   HIT_MAX_PTS: 20,         // one crash never scores more than this
   ROUND_MS: 120000,
   RESULT_MS: 7000,
-  MIN_CARS: 5,             // bot cars fill up to this many
+  SOLO_BOTS: 2,            // bot cars while exactly one person drives; none otherwise
   MAX_PLAYERS: 12,
   TIMEOUT_MS: 15000,
   HEARTBEAT_MS: 3000,

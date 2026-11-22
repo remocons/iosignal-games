@@ -119,18 +119,26 @@ test('cones get knocked and drift back home', () => {
   assert.ok(Math.hypot(cone.x - CONES[0][0], cone.y - CONES[0][1]) < 0.15, 'back home');
 });
 
-test('bots fill the rink and make room for people', () => {
+test('bots only keep a lone driver company', () => {
   const g = new BumperGame({ random: () => 0.37 });
+  const bots = () => [...g.cars.values()].filter((c) => c.kind === 'bot').length;
   let t = run(g, 1000, 3000);
-  assert.equal(g.cars.size, RULES.MIN_CARS);
-  assert.ok([...g.cars.values()].every((c) => c.kind === 'bot'));
+  assert.equal(g.cars.size, 0, 'an empty rink has no bots');
   g.join('?a', 'alice', 0, t);
-  g.join('?b', 'bob', 1, t);
   t = run(g, t, 3000);
-  assert.equal(g.cars.size, RULES.MIN_CARS);
-  assert.equal([...g.cars.values()].filter((c) => c.kind === 'bot').length, RULES.MIN_CARS - 2);
+  assert.equal(bots(), RULES.SOLO_BOTS, 'one person: two bots');
   // bots cannot be driven from outside
   assert.equal(g.handleInput('bot1', 'X', t), false);
+  g.join('?b', 'bob', 1, t);
+  t = run(g, t, 1000);
+  assert.equal(bots(), 0, 'two people: no bots');
+  assert.equal(g.cars.size, 2);
+  g.leave('?b');
+  t = run(g, t, 3000);
+  assert.equal(bots(), RULES.SOLO_BOTS, 'back to one person: bots return');
+  g.leave('?a');
+  run(g, t, 1000);
+  assert.equal(g.cars.size, 0);
 });
 
 test('rounds: results, then scores reset', () => {
@@ -164,7 +172,7 @@ test('snapshot is small; idle players time out', () => {
   g.join('?a', 'alice', 0, 3000);
   const s = g.snapshot(3000);
   assert.ok(JSON.stringify(s).length < 900);
-  assert.equal(s.c.length, RULES.MIN_CARS);
+  assert.equal(s.c.length, 1);
   g.step(3000 + RULES.TIMEOUT_MS + 1);
   assert.equal(g.cars.has('?a'), false);
 });

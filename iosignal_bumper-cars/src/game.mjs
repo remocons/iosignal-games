@@ -72,18 +72,20 @@ export class BumperGame {
     return true;
   }
 
-  // Bots fill the rink up to MIN_CARS and make room when people join.
+  // Bots keep a lone driver company: SOLO_BOTS of them while exactly one person drives.
+  // A second person sends them all home; an empty rink has none.
   balanceBots(now) {
     if (!this.useBots) return;
     const all = [...this.cars.values()];
     const bots = all.filter((c) => c.kind === 'bot');
-    if (all.length < RULES.MIN_CARS) {
+    const want = all.length - bots.length === 1 ? RULES.SOLO_BOTS : 0;
+    if (bots.length > want) {
+      for (const b of bots.slice(want)) this.leave(b.id, 'room');
+    } else if (bots.length < want) {
       const n = ++this.botSeq;
       const used = new Set(all.map((c) => c.color));
       const color = [...COLORS.keys()].find((i) => !used.has(i)) ?? n % COLORS.length;
       this.addCar(`bot${n}`, 'bot', BOT_NAMES[(n - 1) % BOT_NAMES.length], color, now);
-    } else if (all.length > RULES.MIN_CARS && bots.length) {
-      this.leave(bots[bots.length - 1].id, 'room');
     }
   }
 

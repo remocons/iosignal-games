@@ -87,6 +87,7 @@ function onSnapshot(s) {
 // ---------------------------------------------------------------- events: sparks, words, sound
 const nameOf = (id) => roster.get(id)?.[R.NAME] ?? '?';
 const colorOf = (id) => COLORS[roster.get(id)?.[R.COLOR] ?? 0];
+const isBot = (id) => roster.get(id)?.[R.KIND] === 'bot';
 const WHERE = { side: '옆구리!', rear: '뒤에서 쿵!', front: '정면 충돌!' };
 
 function addFeed(html) {
@@ -360,7 +361,8 @@ function updateHud() {
     const rows = [...s.c].sort((a, b) => b[C.SCORE] - a[C.SCORE]);
     $('rank').innerHTML = rows.map((c) => {
       const r = roster.get(c[C.ID]);
-      return `<li><span class="dot" style="background:${COLORS[r?.[R.COLOR] ?? 0]}"></span><span class="n">${esc(r?.[R.NAME] ?? '?')}${r?.[R.KIND] === 'bot' ? ' 🤖' : ''}</span><b>${c[C.SCORE]}</b></li>`;
+      const bot = r?.[R.KIND] === 'bot';
+      return `<li${bot ? ' class="bot"' : ''}><span class="dot" style="background:${COLORS[r?.[R.COLOR] ?? 0]}"></span><span class="n">${bot ? '🤖 ' : ''}${esc(r?.[R.NAME] ?? '?')}</span><b>${c[C.SCORE]}</b></li>`;
     }).join('');
   }
 }
@@ -376,8 +378,9 @@ function setCamera(dt) {
   const side = mode === 'watch' && cw > 760 ? 270 : 0;
   const me = mode === 'play' ? cars.get(io.cid) : null;
   if (!me) {
-    const w = cw - side - 30, h = ch - 80;
-    cam.s = Math.min(w / (ARENA.W + 1.6), h / (ARENA.H + 1.6));
+    // A tiny window (or one still opening at 0×0) would give a negative scale: keep it positive.
+    const w = Math.max(1, cw - side - 30), h = Math.max(1, ch - 80);
+    cam.s = Math.max(0.1, Math.min(w / (ARENA.W + 1.6), h / (ARENA.H + 1.6)));
     cam.x = ARENA.W / 2; cam.y = ARENA.H / 2;
     cam.ox = 15 + w / 2 - cam.x * cam.s;
     cam.oy = 60 + h / 2 - cam.y * cam.s;
@@ -487,16 +490,20 @@ function drawBall(x, y, rot) {
 
 function drawCar(id, c, t) {
   const s = cam.s, r = RULES.CAR_R;
-  const color = colorOf(id);
+  const bot = isBot(id);
+  // Bots: the same car, toned down to grey with a robot driver, so people stand out.
+  const color = bot ? mixColor(colorOf(id), '#8a8fa8', 0.6) : colorOf(id);
   const me = id === io.cid;
   c.wob = Math.max(0, (c.wob ?? 0) - 0.05);
   const wob = Math.sin(t / 30) * c.wob * 0.12;
   shadow(c.x, c.y, r);
   ctx.save();
   ctx.translate(SX(c.x), SY(c.y));
-  if (me) { // a soft ring under your own car
-    ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(0, 0, (r + 0.2) * s, 0, Math.PI * 2); ctx.stroke();
+  if (!bot) { // a ring under every person's car: white for yours, the car colour for the others
+    ctx.strokeStyle = me ? 'rgba(255,255,255,0.85)' : color; ctx.lineWidth = Math.max(2, s * 0.07);
+    ctx.globalAlpha = me ? 1 : 0.75 + Math.sin(t / 250) * 0.2;
+    ctx.beginPath(); ctx.arc(0, 0, (r + 0.22) * s, 0, Math.PI * 2); ctx.stroke();
+    ctx.globalAlpha = 1;
   }
   ctx.rotate(c.a + wob);
   ctx.scale(1 + c.wob * 0.08, 1 - c.wob * 0.08);
@@ -518,10 +525,20 @@ function drawCar(id, c, t) {
   // seat and driver
   ctx.fillStyle = shadeColor(color, 0.5);
   ctx.beginPath(); ctx.roundRect(-bw * 0.28, -bh * 0.3, bw * 0.34, bh * 0.6, 4); ctx.fill();
-  ctx.fillStyle = '#ffd7b0';
-  ctx.beginPath(); ctx.arc(-bw * 0.08, 0, s * 0.17, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = color;
-  ctx.beginPath(); ctx.arc(-bw * 0.12, 0, s * 0.17, Math.PI * 0.5, Math.PI * 1.5); ctx.fill(); // helmet
+  if (bot) { // robot head: a grey box with a blinking eye bar and an antenna
+    const hs = s * 0.3;
+    ctx.fillStyle = '#c3c7d6';
+    ctx.beginPath(); ctx.roundRect(-bw * 0.08 - hs / 2, -hs / 2, hs, hs, 3); ctx.fill();
+    ctx.fillStyle = Math.floor(t / 400) % 4 ? '#5ee1ff' : '#2a6b80';
+    ctx.fillRect(-bw * 0.08 + hs * 0.12, -hs * 0.32, hs * 0.18, hs * 0.64);
+    ctx.strokeStyle = '#c3c7d6'; ctx.lineWidth = Math.max(1, s * 0.03);
+    ctx.beginPath(); ctx.moveTo(-bw * 0.08 - hs / 2, 0); ctx.lineTo(-bw * 0.08 - hs * 0.85, 0); ctx.stroke();
+  } else {
+    ctx.fillStyle = '#ffd7b0';
+    ctx.beginPath(); ctx.arc(-bw * 0.08, 0, s * 0.17, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(-bw * 0.12, 0, s * 0.17, Math.PI * 0.5, Math.PI * 1.5); ctx.fill(); // helmet
+  }
   // pole with a spark at the top (sparkles while driving)
   ctx.fillStyle = '#c9c9d6';
   ctx.fillRect(-bw * 0.48, -s * 0.03, s * 0.12, s * 0.06);
@@ -544,6 +561,13 @@ function flame(c) {
   return { x: bx, y: by, vx: -Math.cos(c.a) * 3 + (Math.random() - 0.5), vy: -Math.sin(c.a) * 3 + (Math.random() - 0.5),
     life: 0.25, max: 0.25, c: Math.random() < 0.5 ? '#ffb703' : '#ff5a5f', puff: true };
 }
+function mixColor(a, b, k) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const ch = (sh) => Math.round(((pa >> sh) & 255) * (1 - k) + ((pb >> sh) & 255) * k);
+  return `#${((ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).padStart(6, '0')}`;
+}
+// Dark text on light car colours (yellow, mint, lime), white on the rest.
+const lightColor = (hex) => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 > 160; };
 function shadeColor(hex, f) {
   const n = parseInt(hex.slice(1), 16);
   const c = (v) => Math.round(Math.min(255, v * f));
@@ -551,17 +575,22 @@ function shadeColor(hex, f) {
 }
 
 function drawLabels() {
+  // People: a bold tag in their car colour (yours: white with ▼). Bots: a small dim 🤖 tag.
   ctx.textAlign = 'center';
-  ctx.font = `700 ${Math.max(10, Math.min(14, cam.s * 0.42))}px system-ui, sans-serif`;
+  const big = Math.max(11, Math.min(15, cam.s * 0.45)), small = Math.max(9, Math.min(12, cam.s * 0.34));
   for (const [id, c] of cars) {
     const r = roster.get(id);
-    const me = id === io.cid;
-    const text = (me ? '▼ ' : '') + (r?.[R.NAME] ?? '?') + (c.combo > 1 ? ` x${c.combo}` : '');
+    const me = id === io.cid, bot = r?.[R.KIND] === 'bot';
+    const color = COLORS[r?.[R.COLOR] ?? 0];
+    const text = (me ? '▼ ' : bot ? '🤖 ' : '') + (r?.[R.NAME] ?? '?') + (c.combo > 1 ? ` x${c.combo}` : '');
+    const size = bot ? small : big;
+    ctx.font = `${bot ? 600 : 800} ${size}px system-ui, sans-serif`;
     const sx = SX(c.x), sy = SY(c.y) - RULES.CAR_R * cam.s - 8;
-    const w = ctx.measureText(text).width + 10;
-    ctx.fillStyle = me ? 'rgba(255,90,95,0.95)' : 'rgba(255,255,255,0.85)';
-    ctx.beginPath(); ctx.roundRect(sx - w / 2, sy - 14, w, 18, 6); ctx.fill();
-    ctx.fillStyle = me ? '#fff' : '#1d2140';
+    const w = ctx.measureText(text).width + (bot ? 8 : 14), hgt = size + (bot ? 4 : 8);
+    ctx.fillStyle = bot ? 'rgba(20,22,45,0.5)' : me ? '#fff' : color;
+    ctx.beginPath(); ctx.roundRect(sx - w / 2, sy - hgt + 4, w, hgt, hgt / 2); ctx.fill();
+    if (me) { ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke(); }
+    ctx.fillStyle = bot ? 'rgba(220,224,240,0.75)' : me ? '#1d2140' : lightColor(color) ? '#1d2140' : '#fff';
     ctx.fillText(text, sx, sy);
   }
 }
@@ -569,6 +598,7 @@ function drawLabels() {
 // ---------------------------------------------------------------- frame
 let lastT = performance.now();
 function frame(t) {
+  requestAnimationFrame(frame); // first, so an error in one frame never stops the loop
   const dt = Math.min(0.1, (t - lastT) / 1000);
   lastT = t;
   const k = Math.min(1, (t - snapAt) / (RULES.TICK_MS * RULES.SNAP_EVERY));
@@ -622,6 +652,5 @@ function frame(t) {
     ctx.fillStyle = f.color; ctx.fillText(f.text, SX(f.x), SY(f.y));
   }
   ctx.globalAlpha = 1;
-  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
