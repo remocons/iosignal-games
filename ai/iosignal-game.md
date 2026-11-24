@@ -1,6 +1,6 @@
 # Building a multiplayer game with IOSignal — context for AI assistants
 
-Give this whole file to your AI assistant (Claude, ChatGPT, Copilot, Cursor, …) before asking it to build or change a game. It states the rules, the exact API and a tested layout, so the assistant does not have to guess. Written against `iosignal` **9.23.0** (Node.js 22.16 or later). Source: https://github.com/remocons/iosignal-games/blob/main/ai/iosignal-game.md
+Give this whole file to your AI assistant (Claude, ChatGPT, Copilot, Cursor, …) before asking it to build or change a game. It states the rules, the exact API and a tested layout, so the assistant does not have to guess. Written against `iosignal` **10.0.0** (Node.js 22.16 or later). Source: https://github.com/remocons/iosignal-games/blob/main/ai/iosignal-game.md
 
 **For the assistant:** follow the MUST rules in section 2 exactly. When something here does not cover a question, read the docs (https://docs.iosignal.net/llms.txt) or the installed package's types and source; do not invent API. Ask the user before changing the tag design once it is agreed.
 
@@ -105,7 +105,7 @@ Copy this layout (it is `iosignal_star-chase`):
 
 ```
 my-game/
-  package.json        "type": "module", deps: iosignal 9.23.0 (+ qrcode for the game kit), scripts: start, test
+  package.json        "type": "module", deps: iosignal 10.0.0 (+ qrcode for the game kit), scripts: start, test
   server.mjs          entry: reads PORT, HOST, PUBLIC_URL; calls startGame(); prints the LAN address
   src/game.mjs        rules only (MUST 4)
   src/<game>-server.mjs   HTTP + Server + host: wires inputs to rules and publishes results

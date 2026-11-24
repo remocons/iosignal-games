@@ -25,7 +25,7 @@ IOSignal 서버를 중계기로 사용하는 실시간 멀티플레이어 게임
 
 - **게임 서버** `server.mjs` → `src/arena-server.mjs`는 HTTP 정적 서버와 IOSignal `Server({ httpServer, wsPath: '/ws', congPort })`를 한 프로세스에서 실행합니다.
 - **게임 호스트**는 `ioServer.host('arena', { inbound: ['arena#in'], own: [...] })`로 서버 안에 등록합니다. `arena#in`으로 온 입력은 호스트에게만 가고, 서버가 확인한 보낸 사람(`from.cid`)이 함께 옵니다. `arena#state`, `arena#$roster`, `arena#evt`, `@fx`는 호스트만 보낼 수 있어 클라이언트가 위조할 수 없습니다. 규칙은 `src/game.mjs`(네트워크 없는 순수 로직)에 있습니다.
-- **IOSignal 버전**: npm `iosignal` 9.23.0을 씁니다(`server.host()`는 9.13.0, 대시보드는 9.14.0부터).
+- **IOSignal 버전**: npm `iosignal` 10.0.0을 씁니다(`server.host()`는 9.13.0, 대시보드는 9.14.0부터).
 - **웹앱** `public/`은 빌드 없이 동작합니다. `/vendor/io.js`(IOSignal IIFE)와 `protocol.js`(서버와 공유하는 맵·규칙·태그)를 사용합니다.
 - **아두이노** `arduino/arena_controller/arena_controller.ino`는 화면이 없는 버튼 컨트롤러입니다. 공용 화면(`?watch`)을 보며 조작합니다.
 

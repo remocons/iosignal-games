@@ -81,7 +81,7 @@ npm start
 | OLED | GPIO4 / GPIO5 | 보드의 SSD1306 (I2C) |
 | LED | GPIO2 | 내장 LED (active low) |
 
-1. 라이브러리: IOSignal(9.13.0 이상), Boho, Crypto, Bounce2, U8g2. Remocon 라이브러리를 설치하면 함께 설치됩니다.
+1. 라이브러리: IOSignal(9.13.0 이상), Crypto, Bounce2, U8g2. IOSignal 9.x는 Boho 라이브러리도 필요하고, 10.0.0부터는 Boho가 IOSignal 안에 들어 있어 따로 설치하지 않습니다.
 2. 보드: `LOLIN(WEMOS) D1 R2 & mini` (`esp8266:esp8266:d1_mini`).
 3. 스케치 위의 `WIFI_SSID`, `WIFI_PASS`, `SERVER_HOST`(게임 서버 PC의 LAN IP)를 바꾸거나, 업로드한 뒤 USB로 https://arduino.iosignal.net/wifi/ 에서 넣습니다. 같은 페이지에서 플레이어 이름(`name`)도 정할 수 있습니다. 비우면 `esp-xxxx`입니다.
 4. 업로드 후 OLED에 이름과 CID가 나오고 관전 화면에 🔌 참가자가 나타납니다.

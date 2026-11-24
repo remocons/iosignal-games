@@ -16,7 +16,7 @@
 
   Arduino IDE
     Board: "ESP32C3 Dev Module" (esp32 core 3.x), Tools > USB CDC On Boot: Enabled
-    Libraries: IOSignal (>= 9.13.0), Boho, Crypto, Bounce2
+    Libraries: IOSignal (>= 9.13.0), Crypto, Bounce2 (IOSignal 9.x also needs Boho; 10.0.0 has it built in)
 
   Protocol (TEXT, see public/protocol.js)
     send "arena#in"  "J,ard,<name>"   join

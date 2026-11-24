@@ -22,7 +22,7 @@
 
   Arduino IDE / arduino-cli
     Board "LOLIN(WEMOS) D1 R2 & mini" (esp8266:esp8266:d1_mini)
-    Libraries: IOSignal (>= 9.13.0), Boho, Crypto, Bounce2, U8g2
+    Libraries: IOSignal (>= 9.13.0), Crypto, Bounce2, U8g2 (IOSignal 9.x also needs Boho; 10.0.0 has it built in)
 
   Wi-Fi and the server: set WIFI_SSID, WIFI_PASS and SERVER_HOST below, or over USB on
   https://arduino.iosignal.net/wifi/ (the board keeps them). SERVER_HOST is the PC running
