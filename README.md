@@ -4,12 +4,12 @@
 
 자기 게임에 IOSignal을 붙이려는 개발자가 그대로 읽고 고쳐 쓸 수 있도록, 모든 게임을 같은 구조로 만들었습니다. AI 도우미로 만들 때 쓰는 맥락 파일과 프롬프트 예제도 함께 있습니다.
 
-| 게임 | 내용 | 참가 기기 | IOSignal에서 볼 것 | 바로 해 보기 |
+| 게임 | 내용 | 참가 기기 | IOSignal에서 볼 것 | 실행 |
 |---|---|---|---|---|
 | [Star Chase](./iosignal_star-chase/README.md) | 별 먼저 먹기 (약 220줄) | 브라우저, 스마트폰 | **자기 게임의 시작점.** 판정·위조 차단·보관 태그·한 사람에게 보내기·재접속의 최소 형태 | 로컬에서 `npm start` |
-| [Arena](./iosignal_arena-game/README.md) | 미로 코인 술래잡기 | 브라우저, 스마트폰, ESP32-C3 버튼 컨트롤러 | 아두이노 TCP 연결, 장치 하나에만 보내는 피드백(`@fx`), 변화 즉시 + 15Hz 스냅샷 | [lab.iosignal.net/games/arena/](https://lab.iosignal.net/games/arena/) |
-| [범퍼카](./iosignal_bumper-cars/README.md) | 부딪치면 점수 나는 범퍼카 | 스마트폰(조이스틱), PC | 서버 안의 30Hz 물리 루프(`host.loop`), 봇, 한 스텝의 이벤트를 메시지 하나로 | [lab.iosignal.net/games/bumper-cars/](https://lab.iosignal.net/games/bumper-cars/) |
-| [동물원 생존하기](./iosignal_zoo-survival/README.md) | 아이소메트릭 복셀 탈출 게임 | 스마트폰, PC, ESP8266(D1 mini) 컨트롤러 | 보관 태그(`$roster`)로 늦게 온 화면도 바로 명단 받기, 아두이노 OLED 피드백 | [lab.iosignal.net/games/zoo-survival/](https://lab.iosignal.net/games/zoo-survival/) |
+| [Arena](./iosignal_arena-game/README.md) | 미로 코인 술래잡기 | 브라우저, 스마트폰, ESP32-C3 버튼 컨트롤러 | 아두이노 TCP 연결, 장치 하나에만 보내는 피드백(`@fx`), 변화 즉시 + 15Hz 스냅샷 | 로컬에서 `npm start` |
+| [범퍼카](./iosignal_bumper-cars/README.md) | 부딪치면 점수 나는 범퍼카 | 스마트폰(조이스틱), PC | 서버 안의 30Hz 물리 루프(`host.loop`), 봇, 한 스텝의 이벤트를 메시지 하나로 | 로컬에서 `npm start` |
+| [동물원 생존하기](./iosignal_zoo-survival/README.md) | 아이소메트릭 복셀 탈출 게임 | 스마트폰, PC, ESP8266(D1 mini) 컨트롤러 | 보관 태그(`$roster`)로 늦게 온 화면도 바로 명단 받기, 아두이노 OLED 피드백 | 로컬에서 `npm start` |
 
 ## 빠른 시작
 
