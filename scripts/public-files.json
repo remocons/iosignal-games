@@ -70,6 +70,7 @@
     "iosignal_zoo-survival/src/game.mjs",
     "iosignal_zoo-survival/src/zoo-server.mjs",
     "iosignal_zoo-survival/test/game.test.mjs",
+    "iosignal_zoo-survival/test/limits.test.mjs",
     "iosignal_zoo-survival/test/smoke.test.mjs"
   ],
   "local": [
