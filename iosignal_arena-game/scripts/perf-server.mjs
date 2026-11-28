@@ -7,9 +7,8 @@ import { RULES } from '../public/protocol.js';
 
 if (process.env.SNAPSHOT_MIN_MS) RULES.SNAPSHOT_MIN_MS = Number(process.env.SNAPSHOT_MIN_MS); // compare rate caps
 
-// Unlimited anonymous quota: the raw relay benchmarks measure IOSignal, not the 9.0 default rate limit.
-const anonymous = { maxMessageBytes: null, fanout: null, msgPerSec: null, bytesPerSec: null, maxConnections: null };
-const arena = await startArena({ port: 0, congPort: 0, log: () => {}, quotas: { anonymous } });
+// No quotas: since iosignal 10.3.0 a Server limits nothing by default, so the raw relay benchmarks measure IOSignal itself.
+const arena = await startArena({ port: 0, congPort: 0, log: () => {} });
 
 // Time the game host's per-snapshot work (build object + JSON encode inside IOSignal).
 const game = arena.game;

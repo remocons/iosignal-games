@@ -25,7 +25,7 @@ IOSignal 서버를 중계기로 사용하는 실시간 멀티플레이어 게임
 
 - **게임 서버** `server.mjs` → `src/arena-server.mjs`는 HTTP 정적 서버와 IOSignal `Server({ httpServer, wsPath: '/ws', congPort })`를 한 프로세스에서 실행합니다.
 - **게임 호스트**는 `ioServer.host('arena', { inbound: ['arena#in'], own: [...] })`로 서버 안에 등록합니다. `arena#in`으로 온 입력은 호스트에게만 가고, 서버가 확인한 보낸 사람(`from.cid`)이 함께 옵니다. `arena#state`, `arena#$roster`, `arena#evt`, `@fx`는 호스트만 보낼 수 있어 클라이언트가 위조할 수 없습니다. 규칙은 `src/game.mjs`(네트워크 없는 순수 로직)에 있습니다.
-- **IOSignal 버전**: npm `iosignal` 10.0.0을 씁니다(`server.host()`는 9.13.0, 대시보드는 9.14.0부터).
+- **IOSignal 버전**: npm `iosignal` 10.3.0을 씁니다(`server.host()`는 9.13.0, 대시보드는 9.14.0부터). 10.3.0부터 직접 만든 `Server`는 기본으로 아무것도 제한하지 않습니다(쿼터 프로필, 주소별 연결 수 제한 없음).
 - **웹앱** `public/`은 빌드 없이 동작합니다. `/vendor/io.js`(IOSignal IIFE)와 `protocol.js`(서버와 공유하는 맵·규칙·태그)를 사용합니다.
 - **아두이노** `arduino/arena_controller/arena_controller.ino`는 화면이 없는 버튼 컨트롤러입니다. 공용 화면(`?watch`)을 보며 조작합니다.
 
@@ -208,6 +208,7 @@ npm run test:browser   # Chrome 플레이어 2창 + 관전 1창 + 모바일 + �
 - `npm test` 9개 통과, `npm run test:browser`(Chrome, `CHROME_PATH`) 통과
 - 9.0은 쿼터를 항상 적용합니다(익명 기본 100 msg/s). `npm run perf -- --quick`에서 12명 + 관전 50명일 때 게임 루프의 `rateLimited`는 0이었습니다.
 - `scripts/perf-server.mjs`는 IOSignal 자체 중계 성능을 재도록 익명 쿼터를 제한 없음으로 띄웁니다(`startArena({ quotas })`). 일반 실행(`npm start`)은 9.0 기본 쿼터를 씁니다.
+- (2026-11-29 덧붙임) iosignal 10.3.0부터는 기본 쿼터가 없어 일반 실행도 제한 없이 돌고, `perf-server.mjs`도 쿼터를 따로 풀지 않습니다.
 - ESP32-C3 실기기는 이번에도 검증하지 않았습니다.
 
 ## 검증 기록 (2026-10-26)

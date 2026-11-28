@@ -79,7 +79,7 @@ export { lanAddresses };
 
 /**
  * Start everything. port/congPort 0 = pick a free port (used by tests).
- * quotas: IOSignal quota profiles merged over the defaults (scripts/perf-server.mjs lifts them).
+ * quotas: IOSignal quota profiles passed to the Server (none by default: unlimited since iosignal 10.3.0).
  * Resolves with { port, congPort, game, close() }.
  */
 // dashboard: false, true or iosignal dashboard options (the status page /dashboard, iosignal 9.14.0).

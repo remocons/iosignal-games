@@ -1,6 +1,6 @@
 # Building a multiplayer game with IOSignal — context for AI assistants
 
-Give this whole file to your AI assistant (Claude, ChatGPT, Copilot, Cursor, …) before asking it to build or change a game. It states the rules, the exact API and a tested layout, so the assistant does not have to guess. Written against `iosignal` **10.0.0** (Node.js 22.16 or later). Source: https://github.com/remocons/iosignal-games/blob/main/ai/iosignal-game.md
+Give this whole file to your AI assistant (Claude, ChatGPT, Copilot, Cursor, …) before asking it to build or change a game. It states the rules, the exact API and a tested layout, so the assistant does not have to guess. Written against `iosignal` **10.3.0** (Node.js 22.16 or later). Source: https://github.com/remocons/iosignal-games/blob/main/ai/iosignal-game.md
 
 **For the assistant:** follow the MUST rules in section 2 exactly. When something here does not cover a question, read the docs (https://docs.iosignal.net/llms.txt) or the installed package's types and source; do not invent API. Ask the user before changing the tag design once it is agreed.
 
@@ -25,7 +25,7 @@ IOSignal is a real-time messaging library: one package gives a Node.js **server*
 2. **Identity comes from `from.cid`.** The host's `message` handler gets `from.cid`, set by the server for that connection. Never read a player id from the payload.
 3. **Every tag the host sends is in `own`.** Then clients cannot forge the scoreboard or state; the server drops such messages (`server.stats().counters.hostDenied`).
 4. **Rules live in a network-free module** (`src/game.mjs`): plain class, inputs and time (`now`) as arguments, outputs as return values or queued events. The server file only wires it to the host. This makes rules unit-testable.
-5. **Send little, send on purpose.** Inputs on change (or a slow heartbeat), never every animation frame. Snapshots at a fixed rate (10–30 Hz) as short arrays. Anonymous connections may send about **100 messages per second** by default (`msgPerSec`); over the limit, messages are dropped silently.
+5. **Send little, send on purpose.** Inputs on change (or a slow heartbeat), never every animation frame. Snapshots at a fixed rate (10–30 Hz) as short arrays. A `Server` you create limits nothing by default (since 10.3.0: no quota profiles, no per-address connection limits); an operator who sets quotas (`quotas`, `anonymousQuota`, e.g. `msgPerSec`) gets over-limit messages dropped silently, so a game that sends little keeps working there too.
 6. **Handle reconnects and leaves.** An anonymous client gets a **new CID after reconnecting**: subscribe and send the join again in every `ready` handler. Remove a player on the host's `leave` event, and also time out players who stop sending (a heartbeat every few seconds).
 7. **One port.** Serve the page, the IOSignal WebSocket (`/ws`) and the browser client file from one HTTP server. Build the WebSocket URL relative to the page (section 5) so the game works behind a proxy path.
 8. **Validate every input.** Parse with a strict format, clamp numbers, cap name length and characters, ignore unknown ops and input from players who have not joined.
@@ -96,7 +96,7 @@ const ms = await io.pingServer();                         // round trip in ms (t
 ```
 
 - Node.js (tests, bots): `import { IO } from 'iosignal'`, same API; close with `io.destroy()`.
-- Payload: a string is sent as TEXT, a plain object as OBJECT (JSON). Keep each message small; the server's limit is `io.quota.maxMessageBytes` after `ready`.
+- Payload: a string is sent as TEXT, a plain object as OBJECT (JSON). Keep each message small; after `ready`, `io.quota.maxMessageBytes` is the server's message size limit, or `null` when it has none (the default).
 - Arduino: `io.signal("star#in", "M,1,0");` and receive `@star.you` in `onMessage`. Arduino receive buffers are small (80 bytes by default): send it short TEXT through `host.to`, not the full snapshot.
 
 ## 6. Project layout
@@ -105,7 +105,7 @@ Copy this layout (it is `iosignal_star-chase`):
 
 ```
 my-game/
-  package.json        "type": "module", deps: iosignal 10.0.0 (+ qrcode for the game kit), scripts: start, test
+  package.json        "type": "module", deps: iosignal 10.3.0 (+ qrcode for the game kit), scripts: start, test
   server.mjs          entry: reads PORT, HOST, PUBLIC_URL; calls startGame(); prints the LAN address
   src/game.mjs        rules only (MUST 4)
   src/<game>-server.mjs   HTTP + Server + host: wires inputs to rules and publishes results
