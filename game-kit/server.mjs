@@ -57,3 +57,36 @@ export function createGameKit({ title, port, publicUrl, QRCode, qrColor = '#1021
 
   return { handle, joinUrl };
 }
+
+/**
+ * Server limits from environment variables, for a game you run where anyone can reach it. A game
+ * server limits nothing unless asked (iosignal 10.3.0 and later); the operator turns limits on:
+ *   IOSIGNAL_ANON_LIMITS="msgPerSec=100,maxMessageBytes=262144"  limits for players that do not log in
+ *     (maxMessageBytes, fanout, msgPerSec, bytesPerSec, maxSubscriptions, deliveriesPerSec)
+ *   IOSIGNAL_CONNECTION_LIMITS="maxPerAddress=200,newPerAddressPerMin=300"  per public address
+ *     (newPerAddressPerMin, failedPerAddressPerMin, maxPerAddress, msgPerAddressPerSec, bytesPerAddressPerSec)
+ * Returns Server options to spread into new Server({ ... }); {} when neither is set. Behind a proxy the
+ * address is the X-Forwarded-For client (the Server trusts it from loopback and private peers).
+ */
+export function serverLimitsFromEnv(env = process.env) {
+  const list = (name) => {
+    const text = env[name];
+    if (!text) return null;
+    const limits = {};
+    for (const part of text.split(',').map((s) => s.trim()).filter(Boolean)) {
+      const [key, value, ...rest] = part.split('=');
+      const number = Number(value);
+      if (!key || rest.length || !(value === 'null' || (Number.isSafeInteger(number) && number >= 0))) {
+        throw new RangeError(`${name}: use name=value pairs with integers, e.g. msgPerSec=100 (got ${part})`);
+      }
+      limits[key] = value === 'null' ? null : number;
+    }
+    return limits;
+  };
+  const options = {};
+  const anonymous = list('IOSIGNAL_ANON_LIMITS');
+  if (anonymous) Object.assign(options, { quotas: { anonymous }, anonymousQuota: 'anonymous' });
+  const connectionLimits = list('IOSIGNAL_CONNECTION_LIMITS');
+  if (connectionLimits) options.connectionLimits = connectionLimits;
+  return options;
+}

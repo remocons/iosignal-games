@@ -37,6 +37,19 @@ npm start
 
 포트 변경: `PORT=6000 CONG_PORT=56000 npm start` · 다른 공간에서 시작: `STAGE=2 npm start` (1~3)
 
+### 공개된 곳에서 운영할 때 (제한)
+
+게임 서버는 기본으로 아무것도 제한하지 않습니다(iosignal 10.3.0). 누구나 접속하는 곳에 띄운다면 환경 변수로 제한을 켭니다(`../game-kit/server.mjs`의 `serverLimitsFromEnv`).
+
+```sh
+IOSIGNAL_ANON_LIMITS=msgPerSec=100,maxMessageBytes=262144 \
+IOSIGNAL_CONNECTION_LIMITS=maxPerAddress=200,newPerAddressPerMin=300 npm start
+```
+
+- `IOSIGNAL_ANON_LIMITS`: 로그인하지 않은 연결(플레이어)의 한도. `maxMessageBytes`, `fanout`, `msgPerSec`, `bytesPerSec`, `maxSubscriptions`, `deliveriesPerSec`.
+- `IOSIGNAL_CONNECTION_LIMITS`: 공인 주소별 연결 제한. `newPerAddressPerMin`, `failedPerAddressPerMin`, `maxPerAddress`, `msgPerAddressPerSec`, `bytesPerAddressPerSec`. 프록시 뒤에서는 `X-Forwarded-For`의 주소로 셉니다.
+- 시작할 때 `Limits` 줄에 적용된 값이 나옵니다.
+
 ### 서버 대시보드
 
 `http://localhost:5190/dashboard`에서 서버 상태를 실시간 그래프로 봅니다(iosignal 9.14.0의 `dashboard`). CPU·메모리·이벤트 루프 지연, 트래픽, 게임 호스트의 참가자·초당 입력·위조 차단, 게임 루프의 틱 간격(`host.loop`), 게임 정보(지금 공간, 진행·탈출, 살아 있는 참가자, 지뢰, 봇, 1등)가 나옵니다. 참가자 CID는 앞 두 글자만 보입니다.

@@ -32,7 +32,7 @@ export { lanAddresses };
  * port / congPort 0 = any free port (tests). dashboard: false, true or iosignal dashboard options.
  * Resolves with { port, congPort, game, host, ioServer, close() }.
  */
-export async function startZoo({ listenHost, publicUrl, port = 5190, congPort = 55490, log = console.log, stage = 0, game = new ZooGame({ stage }), dashboard = true } = {}) {
+export async function startZoo({ listenHost, publicUrl, port = 5190, congPort = 55490, log = console.log, stage = 0, game = new ZooGame({ stage }), dashboard = true, serverOptions = {} } = {}) {
   let ioServer;
   const httpServer = http.createServer(async (req, res) => {
     if (ioServer?.dashboard?.handle(req, res)) return; // /dashboard and /dashboard/io.js
@@ -64,7 +64,8 @@ export async function startZoo({ listenHost, publicUrl, port = 5190, congPort = 
 
   // publicUrl: the address players open when the game runs behind a proxy (QR code and join text).
   const kit = createGameKit({ title: '동물원 생존하기', port: () => httpServer.address().port, publicUrl, QRCode, qrColor: '#1d2b3a' });
-  ioServer = new Server({ httpServer, wsPath: WS_PATH, congPort, dashboard });
+  // serverOptions: limits the operator turns on (serverLimitsFromEnv in game-kit); none by default.
+  ioServer = new Server({ ...serverOptions, httpServer, wsPath: WS_PATH, congPort, dashboard });
   const ready = new Promise((resolve) => ioServer.once('ready', resolve));
   await new Promise((resolve, reject) => { httpServer.once('error', reject); httpServer.listen(port, listenHost, resolve); });
   await ready;
